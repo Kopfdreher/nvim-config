@@ -1,0 +1,5 @@
+# This directory is a Syncthing folder marker.
+# Do not delete.
+
+folderID: dm55p-45rch
+created: 2025-11-17T13:47:02+01:00
