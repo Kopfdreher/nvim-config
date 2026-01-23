@@ -1,0 +1,12 @@
+# Ignore plugin source code (Lazy downloads this automatically)
+lua/kickstart/plugins/
+.tests/
+
+# Ignore the data directory where plugins and LSPs are installed
+.local/
+.cache/
+plugin/
+
+# Ignore system generated files
+.DS_Store
+*.swp

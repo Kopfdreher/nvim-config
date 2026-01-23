@@ -1,31 +1,30 @@
 # Neovim Config
 
-A fast and simple setup script for my Neovim configuration.
+A fast and isolated Neovim setup.
 
-## 🚀 Quick Install
+## 🚀 Quick Install & Run
 
-Run this command in your terminal to install. This method ensures that the interactive prompts (asking to clean up old files) work correctly.
+**1. Install**
+Run this command. It uses process substitution to ensure the interactive prompts (for cleaning up old files) work correctly.
 
 ```bash
 bash <(curl -sL bit.ly/nvim-config)
 
 ```
 
-## ℹ️ What this script does
+**2. Launch**
+Start Neovim with this configuration:
 
-1. **Clean Install:** It will ask if you want to delete your existing Neovim configuration (`~/.config/nvim`) and data (`~/.local/share/nvim`) to ensure a fresh start.
-2. **Setup:** Downloads the configuration and installs the package manager.
-
-> **⚠️ Important:** Please use the command above exactly as written.
-> Do **not** use `curl ... | sh`. The pipe method breaks the interactive prompts, preventing you from confirming the cleanup step.
+```bash
+NVIM_APPNAME=nvim-kopfdreher nvim
 
 ```
 
-### What I added:
-* **The Command:** Prominently displayed.
-* **The "Why":** A specific note explaining *why* they shouldn't use the pipe (`|`) method, addressing the issue you faced earlier.
-* **Transparency:** Briefly lists that it touches `.config` and `.local` folders so users know what is happening to their system.
+*Tip: Add `alias knvim="NVIM_APPNAME=nvim-kopfdreher nvim"` to your shell config so you don't have to type the whole command every time.*
 
-**Would you like me to create a "Manual Installation" section for people who don't like running curl scripts?**
+---
 
-```
+## ℹ️ Important Notes
+
+* **Do not pipe to `sh`:** Use the command exactly as shown above. Using `| sh` breaks the script's ability to ask you for confirmation before deleting files.
+* **Isolation:** This setup installs to `~/.config/nvim-kopfdreher`, keeping your default Neovim config safe.
