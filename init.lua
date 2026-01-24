@@ -674,7 +674,19 @@ require('lazy').setup({
       --  - settings (table): Override the default settings passed when initializing the server.
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
       local servers = {
-        clangd = {},
+        clangd = {
+          -- This injects the config directly, so it travels with your nvim setup
+          cmd = {
+            'clangd',
+            '--background-index',
+            '--clang-tidy',
+            -- 1. Disable the Include Cleaner analysis engine entirely
+            '--config-yaml=Diagnostics: { UnusedIncludes: None }',
+            -- 2. Also disable the clang-tidy check just in case
+            '--clang-tidy-checks=-misc-include-cleaner',
+          },
+        },
+
         -- gopls = {},
         -- pyright = {},
         -- rust_analyzer = {},
