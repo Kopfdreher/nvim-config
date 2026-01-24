@@ -852,9 +852,14 @@ require('lazy').setup({
       },
 
       completion = {
-        -- By default, you may press `<c-space>` to show the documentation.
-        -- Optionally, set `auto_show = true` to show the documentation after a delay.
-        documentation = { auto_show = false, auto_show_delay_ms = 500 },
+        -- 1. Never automatically show the list menu
+        menu = { auto_show = false },
+
+        -- 2. Never show the documentation popup
+        documentation = { auto_show = false },
+
+        -- 3. Never show the grey "ghost text" inline
+        ghost_text = { enabled = false },
       },
 
       sources = {
@@ -1017,4 +1022,3 @@ require('lazy').setup({
 })
 
 -- The line beneath this is called `modeline`. See `:help modeline`
--- vim: ts=2 sts=2 sw=2 et
