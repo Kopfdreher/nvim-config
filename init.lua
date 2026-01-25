@@ -50,6 +50,21 @@ vim.keymap.set('n', '<leader>T', function()
   vim.cmd.startinsert()
 end, { desc = 'Open [T]erminal' })
 
+-- Custom: Toggle Indentation (2 vs 4 spaces)
+vim.keymap.set('n', '<leader>ti', function()
+  if vim.bo.shiftwidth == 4 then
+    vim.opt_local.shiftwidth = 2
+    vim.opt_local.tabstop = 2
+    vim.opt_local.softtabstop = 2
+    print 'Indent: 2 Spaces (C++ Mode)'
+  else
+    vim.opt_local.shiftwidth = 4
+    vim.opt_local.tabstop = 4
+    vim.opt_local.softtabstop = 4
+    print 'Indent: 4 Spaces (Default)'
+  end
+end, { desc = '[T]oggle [I]ndentation' })
+
 -- Custom: Edit Config
 vim.keymap.set('n', '<leader>ev', [[<cmd>edit $MYVIMRC<cr>]], { desc = '[E]dit [V]im config' })
 
@@ -205,6 +220,18 @@ require('lazy').setup({
         },
         virtual_text = { source = 'if_many', spacing = 2 },
       }
+      -- 1. Disable diagnostics immediately on startup
+      vim.diagnostic.enable(false)
+
+      -- 2. Toggle Keymap (<leader>td)
+      vim.keymap.set('n', '<leader>td', function()
+        -- Check if currently enabled
+        local is_enabled = vim.diagnostic.is_enabled()
+        -- Toggle state
+        vim.diagnostic.enable(not is_enabled)
+        -- Print status
+        print('Diagnostics: ' .. (not is_enabled and 'ON' or 'OFF'))
+      end, { desc = '[T]oggle [D]iagnostics' })
 
       local capabilities = require('blink.cmp').get_lsp_capabilities()
       local servers = {
