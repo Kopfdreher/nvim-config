@@ -31,9 +31,8 @@ vim.schedule(function()
 end)
 
 -- [[ Keymaps ]]
-vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic list' })
-vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
+vim.keymap.set('t', '<Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
 
 -- Window Navigation
 vim.keymap.set('n', '<C-h>', '<C-w><C-h>', { desc = 'Move focus to the left window' })
@@ -41,14 +40,39 @@ vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right win
 vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
 vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
 
--- Custom: Open Terminal at bottom
+-- State variable to remember the terminal buffer
+local term_buf = nil
+local term_win = nil
+
 vim.keymap.set('n', '<leader>T', function()
+  -- 1. Check if the terminal window is already visible
+  if term_win and vim.api.nvim_win_is_valid(term_win) then
+    vim.api.nvim_win_close(term_win, true) -- Close it (minimize)
+    term_win = nil
+    return
+  end
+
+  -- 2. Create the window at the bottom
   vim.cmd.new()
   vim.cmd.wincmd 'J'
-  vim.api.nvim_win_set_height(0, 12)
-  vim.cmd.term()
+  vim.api.nvim_win_set_height(0, 10)
+  term_win = vim.api.nvim_get_current_win()
+
+  -- 3. Reuse the buffer if it exists and is valid
+  if term_buf and vim.api.nvim_buf_is_valid(term_buf) then
+    vim.api.nvim_win_set_buf(term_win, term_buf)
+  else
+    -- Otherwise create a new terminal
+    vim.cmd.term()
+    term_buf = vim.api.nvim_get_current_buf()
+    -- Optional: Remove line numbers for cleaner look
+    vim.opt_local.number = false
+    vim.opt_local.relativenumber = false
+  end
+
+  -- 4. Enter Insert mode
   vim.cmd.startinsert()
-end, { desc = 'Open [T]erminal' })
+end, { desc = 'Toggle [T]erminal' })
 
 -- Custom: Toggle Indentation (2 vs 4 spaces)
 vim.keymap.set('n', '<leader>ti', function()
