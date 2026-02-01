@@ -92,8 +92,29 @@ end, { desc = '[T]oggle [I]ndentation' })
 -- Custom: Edit Config
 vim.keymap.set('n', '<leader>ev', [[<cmd>edit $MYVIMRC<cr>]], { desc = '[E]dit [V]im config' })
 
--- Custom: C/C++ Build Automation
+-- Custom: 42 Berlin C++ Indentation Rules
+-- 1. Ensure .tpp and .hpp files are recognized as C++
+vim.filetype.add {
+  extension = {
+    tpp = 'cpp',
+    hpp = 'cpp',
+  },
+}
 
+-- 2. Automatically apply 2-space indentation for C++ files
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = 'cpp', -- Covers .cpp, .hpp, .tpp
+  callback = function()
+    vim.opt_local.shiftwidth = 2
+    vim.opt_local.tabstop = 2
+    vim.opt_local.softtabstop = 2
+    vim.opt_local.expandtab = true
+    -- print('Auto-Indent: 2 Spaces (C++ Mode)') -- Uncomment for debug
+  end,
+  group = vim.api.nvim_create_augroup('CppIndentConfig', { clear = true }),
+})
+
+-- Custom: C/C++ Build Automation
 -- Generate compile_commands.json using compiledb
 vim.api.nvim_create_user_command('GenCC', function()
   if vim.fn.filereadable 'Makefile' == 0 then
