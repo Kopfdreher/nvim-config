@@ -392,6 +392,31 @@ require('lazy').setup({
     },
   },
 
+  { -- OpenCode.nvim (AI Agent)
+    'sudo-tee/opencode.nvim',
+    event = 'VeryLazy',
+    opts = {
+      adapter = 'opencode',
+      model = 'gemini-3-pro-preview',
+      default_mode = 'plan',
+      ui = {
+        position = 'right', -- Split window to the right
+        window_width = 0.40, -- Take up 40% of the screen
+        display_model = true, -- Show which model is active
+        output = {
+          tools = {
+            show_reasoning_output = true, -- Show the AI "thinking" steps
+          },
+        },
+      },
+    },
+
+    keys = {
+      { '<leader>ac', '<cmd>Opencode<cr>', desc = '[A]I [C]hat (OpenCode)' },
+      { '<leader>op', '<cmd>Opencode /plan<cr>', desc = '[O]penCode [P]lan Mode' },
+    },
+  },
+
   { -- Colorscheme
     'folke/tokyonight.nvim',
     priority = 1000,
