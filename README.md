@@ -2,23 +2,6 @@
 
 A fast and isolated Neovim setup.
 
-## 🛠️ Prerequisites
-
-This config requires **compiledb** to generate build files (`compile_commands.json`) for C/C++ completion.
-
-**1. Check if installed:**
-```bash
-compiledb --version
-```
-
-**2. Install if missing:**
-
-```bash
-pip install compiledb
-```
-
----
-
 ## 🚀 Quick Install & Run
 
 **1. Install**
@@ -42,5 +25,6 @@ NVIM_APPNAME=nvim-kopfdreher nvim
 ## ℹ️ Important Notes
 
 * **Do not pipe to `sh`:** Use the command exactly as shown (`bash <(...)`). Using `| sh` breaks the confirmation prompt.
-* **Isolation:** This setup installs to `~/.config/nvim-kopfdreher`.
-* **C/C++ Projects:** If you open a C/C++ project, run `compiledb make` (or your build command) in your terminal first so the LSP can find your definitions.
+* **Isolation:** This setup installs to `~/.config/nvim-kopfdreher` and will not interfere with your main Neovim configuration.
+* **Auto Session:** Sessions are automatically saved and restored. When you reopen a folder, your windows and buffers will be exactly as you left them.
+* **C/C++ Projects:** For full LSP support (go-to-definition, etc.), ensure a `compile_commands.json` file exists in your project root.
