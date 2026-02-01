@@ -322,6 +322,7 @@ require('lazy').setup({
             '--config-yaml=Diagnostics: { UnusedIncludes: None }',
             '--clang-tidy-checks=-misc-include-cleaner',
           },
+          root_dir = require('lspconfig.util').root_pattern('.git', 'compile_commands.json', 'compile_flags.txt', 'Makefile'),
         },
         lua_ls = { settings = { Lua = { completion = { callSnippet = 'Replace' } } } },
       }
