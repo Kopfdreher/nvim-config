@@ -114,38 +114,6 @@ vim.api.nvim_create_autocmd('FileType', {
   group = vim.api.nvim_create_augroup('CppIndentConfig', { clear = true }),
 })
 
--- Custom: C/C++ Build Automation
--- Generate compile_commands.json using compiledb
-vim.api.nvim_create_user_command('GenCC', function()
-  if vim.fn.filereadable 'Makefile' == 0 then
-    vim.notify('No Makefile found.', vim.log.levels.ERROR)
-    return
-  end
-
-  vim.notify('Generating compile_commands.json...', vim.log.levels.INFO)
-
-  -- Run 'compiledb make -n' (dry run)
-  vim.fn.jobstart({ 'compiledb', 'make', '-n', '-B' }, {
-    on_exit = function(_, code)
-      if code == 0 then
-        vim.notify('compile_commands.json updated!', vim.log.levels.INFO)
-        -- Restart clangd if it's running so it sees the new file
-        if vim.lsp.get_clients({ name = 'clangd' })[1] then
-          vim.cmd 'LspRestart clangd'
-        end
-      else
-        vim.notify("GenCC failed. Is 'compiledb' installed?", vim.log.levels.ERROR)
-      end
-    end,
-  })
-end, {})
-
--- Automatically run GenCC whenever you save the Makefile
-vim.api.nvim_create_autocmd('BufWritePost', {
-  pattern = 'Makefile',
-  command = 'GenCC',
-})
-
 -- [[ Autocommands ]]
 vim.api.nvim_create_autocmd('TextYankPost', {
   desc = 'Highlight when yanking (copying) text',
@@ -165,6 +133,14 @@ vim.opt.rtp:prepend(lazypath)
 -- [[ Plugins ]]
 require('lazy').setup({
   'NMAC427/guess-indent.nvim',
+  {
+    'rmagatti/auto-session',
+    lazy = false,
+    opts = {
+      -- Don't restore session if we open Neovim in these directories
+      suppress_dirs = { '~/', '~/Documents', '~/Documents/42Berlin/', '~/Downloads', '/' },
+    },
+  },
   'ThePrimeagen/vim-be-good',
 
   { -- Git Signs
