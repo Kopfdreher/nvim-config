@@ -390,7 +390,6 @@ require('lazy').setup({
 
     keys = {
       { '<leader>ac', '<cmd>Opencode<cr>', desc = '[A]I [C]hat (OpenCode)' },
-      { '<leader>op', '<cmd>Opencode /plan<cr>', desc = '[O]penCode [P]lan Mode' },
     },
   },
 
