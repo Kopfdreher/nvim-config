@@ -18,31 +18,14 @@ echo -e "${BLUE}=========================================${NC}"
 echo -e "${BLUE}   Kopfdreher's Neovim Eval Setup        ${NC}"
 echo -e "${BLUE}=========================================${NC}"
 
-# 1. Check/Install compiledb (User-local install)
-# ---------------------------------------------------------
-echo -e "${BLUE}[+] Checking for compiledb...${NC}"
-export PATH="$HOME/.local/bin:$PATH"
-
-if ! command -v compiledb &> /dev/null; then
-    echo -e "    compiledb not found. Installing via pip3 (local)..."
-    if command -v pip3 &> /dev/null; then
-        pip3 install --user compiledb --quiet
-        echo -e "${GREEN}    compiledb installed successfully!${NC}"
-    else
-        echo -e "${RED}    Warning: pip3 not found. Skipping compiledb install.${NC}"
-    fi
-else
-    echo -e "${GREEN}    compiledb is already installed.${NC}"
-fi
-
-# 2. Check Neovim
+# 1. Check Neovim
 # ---------------------------------------------------------
 if ! command -v nvim &> /dev/null; then
     echo -e "${RED}Error: Neovim is not installed on this machine.${NC}"
     exit 1
 fi
 
-# 3. Setup/Update the Config
+# 2. Setup/Update the Config
 # ---------------------------------------------------------
 if [ -d "$CONFIG_DIR" ]; then
     echo -e "${BLUE}[+] Updating config...${NC}"
@@ -52,19 +35,19 @@ else
     git clone --depth 1 "$REPO_URL" "$CONFIG_DIR" -q
 fi
 
-# 4. Keyboard Tweaks (Caps -> Escape)
+# 3. Keyboard Tweaks (Caps -> Escape)
 # ---------------------------------------------------------
 echo -e "${BLUE}[+] Setting CapsLock to Escape...${NC}"
 setxkbmap -option caps:escape
 
-# 5. Run Neovim in Sandbox Mode
+# 4. Run Neovim in Sandbox Mode
 # ---------------------------------------------------------
 echo -e "${GREEN}[+] Starting Neovim...${NC}"
 echo -e "    (Press Enter if prompted)"
 export NVIM_APPNAME="$APP_NAME"
 nvim "$@"
 
-# 6. Cleanup Prompt
+# 5. Cleanup Prompt
 # ---------------------------------------------------------
 echo -e "${BLUE}=========================================${NC}"
 read -p "Evaluation done? Delete all config/cache files? (y/n) " -n 1 -r
