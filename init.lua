@@ -1,3 +1,7 @@
+if not vim.uv then
+  vim.uv = vim.loop
+end
+
 -- [[ Init.lua - Streamlined ]]
 
 -- Set <space> as the leader key
@@ -6,6 +10,7 @@ vim.g.maplocalleader = ' '
 vim.g.have_nerd_font = os.getenv 'USE_NERD' == '1' -- Nerd-Font mode
 
 -- [[ Options ]]
+vim.opt.backupcopy = 'yes'
 vim.opt.number = true
 vim.opt.relativenumber = true
 vim.opt.mouse = 'a'
@@ -24,8 +29,8 @@ vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
 vim.opt.inccommand = 'split'
 vim.opt.cursorline = true
 vim.opt.scrolloff = 10
-vim.opt.tabstop = 4
-vim.opt.shiftwidth = 4
+vim.opt.tabstop = 2
+vim.opt.shiftwidth = 2
 vim.schedule(function()
   vim.opt.clipboard = 'unnamedplus'
 end)
