@@ -2,11 +2,7 @@ if not vim.uv then
   vim.uv = vim.loop
 end
 
--- Disable unused Neovim providers to clean checkhealth warnings
-vim.g.loaded_python3_provider = 0
-vim.g.loaded_ruby_provider = 0
-vim.g.loaded_perl_provider = 0
-vim.g.loaded_node_provider = 0
+-- [[ Init.lua - Streamlined ]]
 
 -- Set <space> as the leader key
 vim.g.mapleader = ' '
@@ -14,9 +10,6 @@ vim.g.maplocalleader = ' '
 vim.g.have_nerd_font = os.getenv 'USE_NERD' == '1' -- Nerd-Font mode
 
 -- [[ Options ]]
--- Recommended session options for auto-session
-vim.o.sessionoptions = 'blank,buffers,curdir,folds,help,tabpages,winsize,winpos,terminal,localoptions'
-
 vim.opt.backupcopy = 'yes'
 vim.opt.number = true
 vim.opt.relativenumber = true
@@ -36,13 +29,8 @@ vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
 vim.opt.inccommand = 'split'
 vim.opt.cursorline = true
 vim.opt.scrolloff = 10
-
--- Global 2-Space Indentation (default for all filetypes)
 vim.opt.tabstop = 2
 vim.opt.shiftwidth = 2
-vim.opt.softtabstop = 2
-vim.opt.expandtab = true
-
 vim.schedule(function()
   vim.opt.clipboard = 'unnamedplus'
 end)
@@ -82,6 +70,7 @@ vim.keymap.set('n', '<leader>T', function()
     -- Otherwise create a new terminal
     vim.cmd.term()
     term_buf = vim.api.nvim_get_current_buf()
+    -- Optional: Remove line numbers for cleaner look
     vim.opt_local.number = false
     vim.opt_local.relativenumber = false
   end
@@ -90,16 +79,45 @@ vim.keymap.set('n', '<leader>T', function()
   vim.cmd.startinsert()
 end, { desc = 'Toggle [T]erminal' })
 
+-- Custom: Toggle Indentation (2 vs 4 spaces)
+vim.keymap.set('n', '<leader>ti', function()
+  if vim.bo.shiftwidth == 4 then
+    vim.opt_local.shiftwidth = 2
+    vim.opt_local.tabstop = 2
+    vim.opt_local.softtabstop = 2
+    print 'Indent: 2 Spaces (C++ Mode)'
+  else
+    vim.opt_local.shiftwidth = 4
+    vim.opt_local.tabstop = 4
+    vim.opt_local.softtabstop = 4
+    print 'Indent: 4 Spaces (Default)'
+  end
+end, { desc = '[T]oggle [I]ndentation' })
+
 -- Custom: Edit Config
 vim.keymap.set('n', '<leader>ev', [[<cmd>edit $MYVIMRC<cr>]], { desc = '[E]dit [V]im config' })
 
--- Ensure .tpp and .hpp files are recognized as C++
+-- Custom: 42 Berlin C++ Indentation Rules
+-- 1. Ensure .tpp and .hpp files are recognized as C++
 vim.filetype.add {
   extension = {
     tpp = 'cpp',
     hpp = 'cpp',
   },
 }
+
+-- 2. Automatically apply 2-space indentation for C++ files
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = 'cpp', -- Covers .cpp, .hpp, .tpp
+  callback = function()
+    vim.opt_local.shiftwidth = 2
+    vim.opt_local.tabstop = 2
+    vim.opt_local.softtabstop = 2
+    vim.opt_local.expandtab = true
+    -- print('Auto-Indent: 2 Spaces (C++ Mode)') -- Uncomment for debug
+  end,
+  group = vim.api.nvim_create_augroup('CppIndentConfig', { clear = true }),
+})
 
 -- [[ Autocommands ]]
 vim.api.nvim_create_autocmd('TextYankPost', {
@@ -124,6 +142,7 @@ require('lazy').setup({
     'rmagatti/auto-session',
     lazy = false,
     opts = {
+      -- Don't restore session if we open Neovim in these directories
       suppress_dirs = { '~/', '~/Documents', '~/Documents/42Berlin/', '~/Downloads', '/' },
     },
   },
@@ -139,7 +158,7 @@ require('lazy').setup({
     event = 'VimEnter',
     opts = {
       delay = 0,
-      icons = { mappings = false },
+      icons = { mappings = false }, -- No icons
       spec = {
         { '<leader>s', group = '[S]earch' },
         { '<leader>t', group = '[T]oggle' },
@@ -260,16 +279,22 @@ require('lazy').setup({
         },
         virtual_text = { source = 'if_many', spacing = 2 },
       }
+      -- 1. Disable diagnostics immediately on startup
       vim.diagnostic.enable(false)
 
+      -- 2. Toggle Keymap (<leader>td)
       vim.keymap.set('n', '<leader>td', function()
+        -- Check if currently enabled
         local is_enabled = vim.diagnostic.is_enabled()
+        -- Toggle state
         vim.diagnostic.enable(not is_enabled)
+        -- Print status
         print('Diagnostics: ' .. (not is_enabled and 'ON' or 'OFF'))
       end, { desc = '[T]oggle [D]iagnostics' })
 
       local capabilities = require('blink.cmp').get_lsp_capabilities()
       local servers = {
+        -- Clangd with Warning Suppression
         clangd = {
           cmd = {
             'clangd',
@@ -312,12 +337,17 @@ require('lazy').setup({
     },
     opts = {
       notify_on_error = false,
-      format_on_save = { timeout_ms = 500, lsp_format = 'fallback' },
+      format_on_save = function(bufnr)
+        if vim.tbl_contains({ 'c', 'cpp' }, vim.bo[bufnr].filetype) then
+          return nil
+        end
+        return { timeout_ms = 500, lsp_format = 'fallback' }
+      end,
       formatters_by_ft = { lua = { 'stylua' } },
     },
   },
 
-  { -- Autocompletion (Blink.cmp)
+  { -- Autocompletion (Blink.cmp) - No Menu, No Ghost Text, Text-Only
     'saghen/blink.cmp',
     event = 'VimEnter',
     version = '1.*',
@@ -327,11 +357,11 @@ require('lazy').setup({
       appearance = { nerd_font_variant = 'mono', use_nvim_cmp_as_default = true },
       completion = {
         menu = {
-          auto_show = false,
+          auto_show = false, -- Disable auto-popup
           draw = {
             columns = vim.g.have_nerd_font and { { 'kind_icon' }, { 'label', 'label_description', gap = 1 } }
               or { { 'label', 'label_description', gap = 1 }, { 'kind' } },
-          },
+          }, -- Text only
         },
         documentation = { auto_show = false },
         ghost_text = { enabled = false },
@@ -352,16 +382,17 @@ require('lazy').setup({
       model = 'gemini-3-pro-preview',
       default_mode = 'plan',
       ui = {
-        position = 'right',
-        window_width = 0.40,
-        display_model = true,
+        position = 'right', -- Split window to the right
+        window_width = 0.40, -- Take up 40% of the screen
+        display_model = true, -- Show which model is active
         output = {
           tools = {
-            show_reasoning_output = true,
+            show_reasoning_output = true, -- Show the AI "thinking" steps
           },
         },
       },
     },
+
     keys = {
       { '<leader>ac', '<cmd>Opencode<cr>', desc = '[A]I [C]hat (OpenCode)' },
     },
@@ -383,34 +414,29 @@ require('lazy').setup({
     config = function()
       require('mini.ai').setup { n_lines = 500 }
       require('mini.surround').setup()
-      require('mini.statusline').setup { use_icons = vim.g.have_nerd_font }
+      require('mini.statusline').setup { use_icons = vim.g.have_nerd_font } -- Force text mode
     end,
   },
 
-  { -- Treesitter (Updated to modern 'main' rewrite branch)
+  { -- Treesitter
     'nvim-treesitter/nvim-treesitter',
-    branch = 'main',
-    event = { 'BufReadPost', 'BufWritePost', 'BufNewFile' },
     build = ':TSUpdate',
-    config = function()
-      local ts = require 'nvim-treesitter'
-      ts.install { 'javascript', 'typescript', 'go', 'html', 'c', 'cpp', 'lua', 'vim', 'vimdoc', 'query', 'markdown', 'markdown_inline' }
-      vim.api.nvim_create_autocmd('FileType', {
-        callback = function(args)
-          pcall(vim.treesitter.start, args.buf)
-        end,
-      })
-    end,
+    main = 'nvim-treesitter.configs',
+    opts = {
+      ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'vim', 'vimdoc' },
+      auto_install = true,
+      highlight = { enable = true, additional_vim_regex_highlighting = { 'ruby' } },
+      indent = { enable = true, disable = { 'ruby' } },
+    },
   },
 
   require 'kickstart.plugins.lint',
   require 'kickstart.plugins.neo-tree',
   { import = 'custom.plugins' },
 }, {
-  rocks = {
-    enabled = false, -- Fixes LuaRocks warning in Lazy checkhealth
-  },
   ui = {
+    -- If true: use default Nerd Fonts (empty table)
+    -- If false: use text/emoji fallbacks
     icons = vim.g.have_nerd_font and {} or {
       cmd = '⌘',
       config = '🛠',
