@@ -25,7 +25,9 @@ return {
       -- Only the project's own eslint. No global or fallback binary, so a
       -- buffer without node_modules/.bin/eslint does not error on BufEnter.
       local function project_eslint()
-        return require('custom.format_defaults').project_eslint(0)
+        local name = vim.api.nvim_buf_get_name(0)
+        local start = name ~= '' and vim.fn.fnamemodify(name, ':h') or vim.fn.getcwd()
+        return vim.fs.find('node_modules/.bin/eslint', { path = start, upward = true })[1]
       end
 
       -- To allow other plugins to add linters to require('lint').linters_by_ft,

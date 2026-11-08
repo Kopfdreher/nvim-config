@@ -5,6 +5,9 @@ return {
     version = '1.*',
     dependencies = { 'L3MON4D3/LuaSnip', 'folke/lazydev.nvim' },
     opts = {
+      enabled = function()
+        return false
+      end,
       sources = {
         default = { 'lsp', 'path', 'snippets', 'lazydev' },
         providers = { lazydev = { module = 'lazydev.integrations.blink', score_offset = 100 } },
