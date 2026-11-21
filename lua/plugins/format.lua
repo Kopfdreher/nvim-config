@@ -1,5 +1,6 @@
 -- Manual formatting only (<leader>f).
--- JS/TS: project ESLint, else project Oxlint, else single-quote Prettier.
+-- JS/TS: project ESLint fixes (if any), then project Oxlint, then Prettier.
+-- ESLint is not a style formatter here, so it must not stop the chain.
 
 local eslint_script = [=[
 const { spawnSync } = require('child_process')
@@ -78,10 +79,10 @@ return {
       formatters_by_ft = {
         lua = { 'stylua' },
         cpp = { 'clang-format' },
-        javascript = { 'eslint_fix', 'oxlint', 'prettier_default', stop_after_first = true },
-        typescript = { 'eslint_fix', 'oxlint', 'prettier_default', stop_after_first = true },
-        javascriptreact = { 'eslint_fix', 'oxlint', 'prettier_default', stop_after_first = true },
-        typescriptreact = { 'eslint_fix', 'oxlint', 'prettier_default', stop_after_first = true },
+        javascript = { 'eslint_fix', 'oxlint', 'prettier_default' },
+        typescript = { 'eslint_fix', 'oxlint', 'prettier_default' },
+        javascriptreact = { 'eslint_fix', 'oxlint', 'prettier_default' },
+        typescriptreact = { 'eslint_fix', 'oxlint', 'prettier_default' },
         json = { 'prettierd', 'prettier', stop_after_first = true },
         yaml = { 'prettierd', 'prettier', stop_after_first = true },
         html = { 'prettierd', 'prettier', stop_after_first = true },

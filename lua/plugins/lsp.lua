@@ -1,7 +1,7 @@
 -- LSP attaches to binaries on $PATH (no Mason — install via brew/system).
--- e.g. `brew install llvm lua-language-server stylua`
--- TypeScript 7: nvim-lspconfig's `tsc` server (`tsc --lsp`). It uses
--- `node_modules/.bin/tsc` when that binary is TypeScript 7+.
+-- e.g. `brew install llvm lua-language-server stylua typescript-language-server`
+-- TypeScript: `ts_ls` (`typescript-language-server`). This repo is on TypeScript 5/6,
+-- whose `tsc` has no `--lsp` (that flag is TypeScript 7+).
 return {
   {
     'neovim/nvim-lspconfig',
@@ -34,8 +34,8 @@ return {
           },
         },
         lua_ls = { settings = { Lua = { completion = { callSnippet = 'Replace' } } } },
-        -- TypeScript 7 native server (lspconfig `tsc`). Do not also enable ts_ls / vtsls.
-        tsc = {},
+        -- Classic tsserver client. Works with the TypeScript version in node_modules.
+        ts_ls = {},
         eslint = {},
       }
 
@@ -43,9 +43,13 @@ return {
         vim.lsp.config(name, vim.tbl_deep_extend('force', { capabilities = capabilities }, server))
       end
       -- Only enable servers whose binary exists on $PATH.
-      local bins = { clangd = 'clangd', lua_ls = 'lua-language-server', eslint = 'vscode-eslint-language-server' }
-      -- `tsc` resolves node_modules/.bin/tsc itself; it is not required on $PATH.
-      local to_enable = { 'tsc' }
+      local bins = {
+        clangd = 'clangd',
+        lua_ls = 'lua-language-server',
+        eslint = 'vscode-eslint-language-server',
+        ts_ls = 'typescript-language-server',
+      }
+      local to_enable = {}
       for name, bin in pairs(bins) do
         if vim.fn.executable(bin) == 1 then
           table.insert(to_enable, name)

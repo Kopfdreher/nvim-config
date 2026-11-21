@@ -52,9 +52,10 @@ vim.filetype.add {
   extension = { tpp = 'cpp', hpp = 'cpp' },
 }
 
--- Quiet, low-distraction diagnostics (view on demand with <C-w>d or gl)
+-- Signs and underline only. The message is <leader>d.
 vim.diagnostic.config {
   virtual_text = false,
+  virtual_lines = false,
   signs = true,
   underline = true,
   update_in_insert = false,
